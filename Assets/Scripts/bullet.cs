@@ -69,7 +69,8 @@ public class bullet : MonoBehaviour
 
                 //Destroy(this.gameObject);
                 //123
-
+                ///34343
+                /////2/34234
             }
 
     }
