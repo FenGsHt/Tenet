@@ -68,7 +68,7 @@ public class bullet : MonoBehaviour
                 humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.bulletBack, transform.position, 0, 0, 1);
 
                 //Destroy(this.gameObject);
-
+                //123
 
             }
 
