@@ -11,9 +11,9 @@ public class Egg
     public float parm1;  //参数
     public float parm2;
     public Vector2 position;   //保存位置信息
-    public int direction;    //1表示正向,0表示反向
+    //public int direction;    //1表示正向,0表示反向
 
-    public Egg(int frame,ActionEnum.movement movement,Vector2 position,float parm1,float parm2,int direction)
+    public Egg(int frame,ActionEnum.movement movement,Vector2 position,float parm1,float parm2)
     {
         this.frame = frame;
         this.movement = movement;
@@ -21,7 +21,7 @@ public class Egg
         this.parm1 = parm1;
         this.parm2 = parm2;
 
-        this.direction = direction;    
+       // this.direction = direction;    
     }
     
 

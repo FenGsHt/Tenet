@@ -21,17 +21,17 @@ public class AITool : MonoBehaviour
         //控制敌人的行走
         if (direction == 1)
         {
-           return body.Walk(1,new Vector2());
+           return body.Walk(1,Vector2.zero);
         }
         else
         {
-           return body.Walk(-1, new Vector2());
+           return body.Walk(-1,Vector2.zero);
         }
     }
 
     public static void Attack(humanBody body)
     {
-        body.Attack(body.direction, true);
+        body.Attack(body.direction, true,Vector2.zero);
     }
 
     public static void RandomAttack(humanBody body,int IQ)

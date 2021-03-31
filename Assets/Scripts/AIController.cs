@@ -54,6 +54,30 @@ public class AIController : MonoBehaviour
 
     }
 
+    private Vector2 UpdateInfo(Vector2 position)
+    {
+        position += AITool.Patrol(body.target, body, this, body.speed);
+
+        position += AITool.ApproachOrAway(body.target, body, faceDistance, body.speed, 1);
+
+        body.DetectGround();
+        position += body.Gravity(Vector2.zero);
+
+
+        //因为跳跃是要连续使用的函数,所以放在update中
+        position += AITool.Jump(body, jumpHeight);
+
+        if (body.target != null)
+        {
+
+            AITool.RandomAttack(body, 5);
+            AITool.IfLost(body.target, body, lostDistance);
+        }
+
+        return position;
+
+    }
+
     void Update()
     {
 
@@ -63,52 +87,27 @@ public class AIController : MonoBehaviour
             Vector2 position = transform.position;
 
 
-            //没死才有动作
-            if (Master.status==0)    //正常状态下
-            if (anim.GetBool("dead") == false)
-            {
-
-                position += AITool.Patrol(body.target, body, this, body.speed);
-
-                position += AITool.ApproachOrAway(body.target, body, faceDistance, body.speed, 1);
-
-                body.DetectGround();
-                position += body.Gravity( new Vector2());
-                
-
-                //因为跳跃是要连续使用的函数,所以放在update中
-                position += AITool.Jump(body, jumpHeight);
-
-                if (body.target != null)
-                {
-
-                    AITool.RandomAttack(body, 5);
-                    AITool.IfLost(body.target, body, lostDistance);
-                }
-
-
-            }
-
-
-            if (Master.status == 2)
+            if (Master.status == 2 || Master.currentDirection == 0)
             {
                 //进行查找egg
-                position = mController.FindEgg();
+                position = mController.FindEgg(body.tenetDirection);
             }
+            else if (body.tenetDirection == Master.currentDirection && Master.status == 0)
+            {
+                if (anim.GetBool("dead") == false)
 
+                {
+                    position = UpdateInfo(position);
 
+                }
+            }
+               
 
             rigidbody.MovePosition(position);
 
         }
 
-
-
     }
        
-
-       
-
-  
 
 }

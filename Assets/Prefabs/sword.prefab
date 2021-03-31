@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2847076096611159375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4213472771189246587}
+  m_Layer: 0
+  m_Name: HitPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4213472771189246587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2847076096611159375}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.007, y: 0.426, z: 0}
+  m_LocalScale: {x: 1.0214, y: 1.0214, z: 1.0214}
+  m_Children: []
+  m_Father: {fileID: 3687475963380075245}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8025574805967620676
 GameObject:
   m_ObjectHideFlags: 0
@@ -29,7 +59,8 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 4213472771189246587}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -129,4 +160,8 @@ MonoBehaviour:
   attacking: 0
   damage: 0
   father: {fileID: 0}
+  crack: {fileID: 1331231801978091579, guid: e455da3a6b177354b880dfdcde4b412b, type: 3}
+  blood: {fileID: 6654702248287526804, guid: 928aabb579c7a39469f11f7bbb59f8eb, type: 3}
+  ghosting: {fileID: 8759521386991105494, guid: 21fb66cec14b2c04882aa6434f267eca,
+    type: 3}
   owner: {fileID: 0}

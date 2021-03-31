@@ -63,17 +63,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\AnimNormalize.cs" />
-    <Compile Include="Assets\DetectGround.cs" />
-    <Compile Include="Assets\MasterController.cs" />
     <Compile Include="Assets\Scripts\AIController.cs" />
     <Compile Include="Assets\Scripts\AITool.cs" />
     <Compile Include="Assets\Scripts\ActionEnum.cs" />
+    <Compile Include="Assets\Scripts\AnimNormalize.cs" />
+    <Compile Include="Assets\Scripts\DetectGround.cs" />
     <Compile Include="Assets\Scripts\Egg.cs" />
     <Compile Include="Assets\Scripts\HealthCollectable.cs" />
     <Compile Include="Assets\Scripts\Master.cs" />
+    <Compile Include="Assets\Scripts\MasterController.cs" />
     <Compile Include="Assets\Scripts\RubyController.cs" />
+    <Compile Include="Assets\Scripts\SmallOnes\CameraChange.cs" />
+    <Compile Include="Assets\Scripts\SmallOnes\Crack.cs" />
     <Compile Include="Assets\Scripts\SmallOnes\SpeedUpWhileAttack.cs" />
+    <Compile Include="Assets\Scripts\TenetDoor.cs" />
     <Compile Include="Assets\Scripts\bullet.cs" />
     <Compile Include="Assets\Scripts\detect.cs" />
     <Compile Include="Assets\Scripts\gunBody.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Assets\Scripts\mainGuyController.cs" />
     <Compile Include="Assets\Scripts\patrolDot.cs" />
     <Compile Include="Assets\Scripts\swordBody.cs" />
+    <None Include="Assets\Art\Shaders\NewSurfaceShader.shader" />
     <Reference Include="UnityEngine">
       <HintPath>D:/Edit_unity/2019.4.22f1c1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

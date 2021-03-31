@@ -9,6 +9,7 @@ public class mainGuyController : MonoBehaviour
 
     public int normalSpeed = 5;   //默认速度
 
+   
 
     private Rigidbody2D rigidbody;
 
@@ -19,6 +20,8 @@ public class mainGuyController : MonoBehaviour
 
     private humanBody body;
 
+    public ParticleSystem sprintLeaf;  //冲刺时掉落树叶
+
    // private int updateTimer=0;   //用于frame的添加工作,当updateTimer为1时表示已经有一次没有添加了,此时添加
 
     //private Vector2 lastPosition;  //记录上一次更新时的坐标
@@ -26,10 +29,14 @@ public class mainGuyController : MonoBehaviour
     float horizontal ;   //水平方向运动
     float vertical;    //垂直方向运动
     float jump;
-    bool attack ;
+    bool attack;
     
     private void Awake()
     {
+        sprintLeaf = Instantiate(sprintLeaf, transform.position, Quaternion.identity, transform);
+
+        sprintLeaf.Stop();
+
         rigidbody = GetComponent<Rigidbody2D>();
 
         anim = GetComponent<Animator>();
@@ -50,6 +57,8 @@ public class mainGuyController : MonoBehaviour
 
         if (anim.GetInteger("Attack") == 1)
         {
+            sprintLeaf.Play();
+
             body.speed = attackSpeed;
         }
         else
@@ -65,16 +74,15 @@ public class mainGuyController : MonoBehaviour
 
         Vector2 position = new Vector2() ;
 
-        
 
         //当没死时可以用
         if (anim.GetBool("dead") == false)
         {
             position += body.Jumping(jump,0,new Vector2());  //调用Jump函数
 
-            position += body.Walk(horizontal, new Vector2());   //调用humanBody的Walk;
+            position += body.Walk(horizontal,Vector2.zero);   //调用humanBody的Walk;
 
-            body.Attack(horizontal, attack);
+            body.Attack(horizontal, attack,Vector2.zero);
         }
 
         //Debug.Log("qwe");
@@ -96,20 +104,7 @@ public class mainGuyController : MonoBehaviour
 
         Vector2 position= transform.position;
 
-
-        //if (this.updateTimer > 0)
-        //{
-        //    body.AddFrame(position, this.lastPosition);  //根据情况增加frame
-
-        //    this.updateTimer = 0;
-
-        //}
-
-        //this.lastPosition = transform.position;  //记录当前的位置
-
-
-       // this.updateTimer++;
-
+       // Debug.Log(" Master.currentDirection "+Master.currentDirection+" master.status "+Master.status);
 
         if (Master.status == 1)
         {
@@ -126,27 +121,65 @@ public class mainGuyController : MonoBehaviour
         body.DetectWall();
 
 
-        
+        //Debug.Log(Master.currentDirection);
 
-
-
-
-        if (Master.status ==0)     //当全局状态为正常时才进行所有动作
+        //$$$$#$@#$@!$!
+        //正向
+        if (body.tenetDirection == 1&&Master.status!=1)
         {
-            //每时每刻都有重力
 
-            position += body.Gravity(new Vector2());
+            if (Master.currentDirection == 0||Master.status==2)
+            {
+                //当为回放状态或者逆转方向时进行查找egg
+                    position = mController.FindEgg(body.tenetDirection);
 
-            position +=UpdateInfo();
+
+            }
+            else if (Master.status == 0 && Master.currentDirection == 1)     //当全局状态为正常时才进行所有动作
+            {
+                //每时每刻都有重力
+               // Debug.Log("还在动");
+
+                position += body.Gravity(Vector2.zero);
+
+                position += UpdateInfo();
+
+
+            }
+
+
         }
 
-        if (Master.status == 2)
+        //$$$$#$@#$@!$!
+        //逆向
+        if (body.tenetDirection == 0&&Master.status!=1)
         {
-            position = mController.FindEgg();
+            //此部分为逆转主角所独有的.
+
+            if (Master.status == 0)
+            {
+                //此时表示正常的逆向主角的操作
+                position += body.Gravity(Vector2.zero);
+
+                position += UpdateInfo();
+
+                //Debug.Log("逆转");
+
+            }
+            else if (Master.status == 2)
+            {
+                //表示逆向的方向在回退
+                position = mController.FindEgg(body.tenetDirection);
+            }
+
+
         }
 
+        //Debug.Log(mController.eggList.Count);
+        //Debug.Log(body.tenetDirection + " " + Master.currentDirection);
 
-        body.AutoStop(mController.eggList,Master.frame);   
+
+       // body.AutoStop(mController.eggList,Master.frame);   
 
 
         rigidbody.MovePosition(position);
