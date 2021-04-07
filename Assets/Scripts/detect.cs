@@ -7,6 +7,8 @@ public class detect : MonoBehaviour
 
     public float angle = 90f;   //检测的角度范围
 
+    public float radius = 90f;
+
     public float distance = 0.5f;   //检测距离
 
     public float rotatePerSecond = 90f;   //每秒旋转角度
@@ -17,7 +19,7 @@ public class detect : MonoBehaviour
 
     private AIController aiController;  //存放这个
 
-
+    private MasterController mController;
 
     //用于敌人检测周围的状况,这个游戏中只需要检测玩家即可
 
@@ -30,6 +32,7 @@ public class detect : MonoBehaviour
 
         aiController = GetComponent<AIController>();
 
+        mController = GetComponent<MasterController>();
         
     }
     
@@ -42,6 +45,8 @@ public class detect : MonoBehaviour
 
         if (body.direction >= 1)
         {
+
+            //Debug.Log("123");
             Debug.DrawRay(controller.transform.position, eulerAnger* controller.transform.right.normalized * distance, DebugColor);
 
             rotation = eulerAnger * controller.transform.right.normalized * distance;
@@ -78,9 +83,13 @@ public class detect : MonoBehaviour
 
                 body.target = hit.collider.gameObject;
 
-               // Debug.Log("打中的是人");
+                //加egg
+               humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.findMainguy, transform.position,0, 0,body.tenetDirection);  //加入事件帧
+               
+
+                // Debug.Log("打中的是人");
             }
-            
+
             return true;
         }
         return false;
@@ -90,11 +99,11 @@ public class detect : MonoBehaviour
 
     private bool Look()
     {
-        float subAngle = angle / accuracy;
+        float subRadius = radius / accuracy;
 
         for(int i = 0; i < accuracy; i++)
         {
-            if(LookAround(gameObject,Quaternion.Euler(0, 0, -angle / 2 + i * subAngle + Mathf.Repeat(rotatePerSecond * Time.time, subAngle)), distance, Color.black))
+            if(LookAround(gameObject,Quaternion.Euler(0, 0, angle + i * subRadius + Mathf.Repeat(rotatePerSecond * Time.time, subRadius)), distance, Color.black))
             {
 
                 return true;
@@ -110,6 +119,11 @@ public class detect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Look();
+
+        if (Master.status == 0)
+        {
+            Look();
+
+        }
     }
 }

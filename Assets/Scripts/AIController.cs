@@ -31,11 +31,15 @@ public class AIController : MonoBehaviour
     private Rigidbody2D rigidbody;
     private Animator anim; 
    
-    
+    private CursorController cController;   //保存鼠标变量
+
 
 
     private void Awake()
     {
+        cController = GetComponent<CursorController>();
+
+
         body = GetComponent<humanBody>();
         rigidbody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -53,6 +57,8 @@ public class AIController : MonoBehaviour
          //控制敌人的行动的函数
 
     }
+
+  
 
     private Vector2 UpdateInfo(Vector2 position)
     {
@@ -81,15 +87,20 @@ public class AIController : MonoBehaviour
     void Update()
     {
 
-        if (Master.status !=1)     //当全局状态为正常时才进行所有动作
+        if (Master.status != 1)     //当全局状态为正常时才进行所有动作
         {
 
             Vector2 position = transform.position;
 
-
-            if (Master.status == 2 || Master.currentDirection == 0)
+            if (Master.currentDirection == 1 && body.tenetDirection == 0)
             {
-                //进行查找egg
+                //此时表示敌人为被标记的敌人,停止判定和动画的播放(相当于个人的暂停)
+
+
+            }
+            if (Master.status == 2 || Master.currentDirection !=body.tenetDirection)
+            {
+                //这里要涵盖所有的回放状态
                 position = mController.FindEgg(body.tenetDirection);
             }
             else if (body.tenetDirection == Master.currentDirection && Master.status == 0)
@@ -101,7 +112,9 @@ public class AIController : MonoBehaviour
 
                 }
             }
-               
+
+            //position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+           //Debug.Log();
 
             rigidbody.MovePosition(position);
 

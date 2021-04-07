@@ -25,6 +25,14 @@ public class Master : MonoBehaviour
 
     public static int hitPause;   //2,1,0 2为开始,1为恢复,0为无行动
 
+    public static int mistakeTimer;   //计时器
+
+    public static int killedEnemyNum;   //已经被杀的敌人数量
+
+    public static int totalEnemyNum;    //总共的敌人数量
+
+    public static int stageKilliedNum;   //记录正向击杀的人数
+
     //public static int timer;   //记录
 
     bool timeBack_Forward;   //时间逆转按钮
@@ -45,6 +53,8 @@ public class Master : MonoBehaviour
         head=Master.ReverseMainGuy.transform.Find("chest/head");
 
         Instantiate(ReverseMainGuyHair,new Vector3(0,0.5f,0), Quaternion.identity, head);
+
+        
 
 
     }
@@ -157,13 +167,109 @@ public class Master : MonoBehaviour
         }
     }
 
+    public void CalculateEnemy()
+    {
+
+        Master.totalEnemyNum = 0;
+        //统计敌人
+        for (int i = 0; i < Master.bodyCollector.Count; i++)
+        {
+            humanBody tempBody = Master.bodyCollector[i];
+
+            if (tempBody.GetComponent<AIController>() != null)
+            {
+                //表示有AI控件,所以是敌人,此时totalNum++
+                if (Master.currentDirection == 1)
+                    if(tempBody.tenetDirection==Master.currentDirection)   //在正向时则被标记的反向敌人不算在敌人总数中
+                    {
+                        Master.totalEnemyNum++;
+
+                    }
+
+                if (Master.currentDirection == 0)    //反向时所有敌人都添加
+                {
+                    Master.totalEnemyNum++;   
+                }
+            }
+
+        }
+
+        //进入逆转门后每个dead为true的敌人都可以加killedNum;
+        Master.killedEnemyNum = 0;
+
+        if (Master.currentDirection == 1)
+        {
+            //正常时死亡的人数,当cd变为0时这个值变为固定值
+            for (int i = 0; i < Master.bodyCollector.Count; i++)
+            {
+                humanBody tempBody = Master.bodyCollector[i];
+
+                if (tempBody.GetComponent<AIController>() != null)   //为敌人
+                {
+                    if (tempBody.tenetDirection == 1)
+                        if (tempBody.GetAnimator().GetBool("dead") == true)
+                        {
+                            Master.killedEnemyNum++;
+                        }
+                }
+                  
+
+            }
+        }
+
+        if (Master.currentDirection == 0)
+        {
+            //逆转时死亡的人数
+            for (int i = 0; i < Master.bodyCollector.Count; i++)
+            {
+                humanBody tempBody = Master.bodyCollector[i];
+
+                if (tempBody.GetComponent<AIController>() != null)   //为敌人
+                {
+                    if (tempBody.tenetDirection == 0)
+                        if (tempBody.GetAnimator().GetBool("dead") == true)
+                        {
+                            Master.killedEnemyNum++;
+                        }
+
+                }
+
+
+                  
+
+            }
+        }
+
+        Master.killedEnemyNum += Master.stageKilliedNum;   //如果在逆转阶段则加上之前的数量
+
+
+        //Debug.Log(Master.killedEnemyNum + " " + Master.totalEnemyNum);
+    }
+
+    public static void CalculateStageEnemy()
+    {
+        //计算阶段敌人
+      // 正常时死亡的人数,当cd变为0时这个值变为固定值
+            for (int i = 0; i < Master.bodyCollector.Count; i++)
+            {
+                humanBody tempBody = Master.bodyCollector[i];
+
+                if (tempBody.tenetDirection == 1)
+                    if (tempBody.GetAnimator().GetBool("dead") == true)
+                    {
+                        Master.stageKilliedNum++;
+                    }
+
+            }
+
+    }
     public static void HitPause()
     {
         //击中时卡一下
         if (hitPause >=2)
         {
             System.Threading.Thread.Sleep(50);
-            Debug.Log("hitPause暂停中");
+            //Debug.Log("hitPause暂停中");
             //Master.status = 1;
             //Master.SetAnimSpeed(0f);
 
@@ -179,9 +285,45 @@ public class Master : MonoBehaviour
         //Debug.Log(Master.status);
     }
 
+    //public void MouseEvent()
+    //{
+
+    //}
+
     // Update is called once per frame
     void Update()
     {
+
+        timeBack_Forward = Input.GetButton("TimeBack_Forward");   //时间逆转按钮
+        timeBack_Backward = Input.GetButton("TimeBack_Backward");   //时间反向时逆转按钮
+        pause = Input.GetButton("Pause");  //暂停按钮
+
+        if (Master.frame <= Master.finalFrame && Master.currentDirection == 0)
+        {
+            if (timeBack_Backward == true)
+            {
+                //Debug.Log("reverse");
+                Master.Reverse();
+            }
+
+        }
+
+
+
+        //当为正常正向且回退键松开时,则自动暂停
+        if ((timeBack_Backward == false && timeBack_Forward == false) && Master.status == 2 && Master.mistakeTimer <= 0)
+        {
+            //表示回放键已经松开了,此时进入暂停状态
+            pause = true;
+            Debug.Log("pause");
+
+        }
+
+
+        CalculateEnemy();   //计算胜利条件是否达到
+
+        MistakeReverse();   //玩家击中不同纬度的敌人后强制倒退3秒
+
         HitPause();   //击中时的暂停判断
 
         FrameChange();  //根据status和currentDirection来决定frame的增减
@@ -189,9 +331,7 @@ public class Master : MonoBehaviour
         // Debug.Log(Master.frame);
 
 
-        timeBack_Forward = Input.GetButton("TimeBack_Forward");   //时间逆转按钮
-        timeBack_Backward = Input.GetButton("TimeBack_Backward");   //时间反向时逆转按钮
-        pause = Input.GetButton("Pause");  //暂停按钮
+       
 
 
         if(Master.frame>0&&Master.currentDirection==1)      //frame为0表示逆转到尽头了
@@ -205,26 +345,7 @@ public class Master : MonoBehaviour
         }
            
 
-        if(Master.frame <= Master.finalFrame && Master.currentDirection==0)
-        {
-            if ( timeBack_Backward == true)
-            {
-                Debug.Log("reverse");
-                Master.Reverse();
-            }
-           
-        }
-            
-
-        
-        //当为正常正向且回退键松开时,则自动暂停
-        if ((timeBack_Backward==false&&timeBack_Forward == false) && Master.status == 2)
-        {
-            //表示回放键已经松开了,此时进入暂停状态
-            pause = true;
-            Debug.Log("pause");
-
-        }
+      
 
        
 
@@ -250,6 +371,18 @@ public class Master : MonoBehaviour
         //Debug.Log(Master.frame);
     }
 
+    public static void MistakeReverse()
+    {
+        if (Master.mistakeTimer > 0)
+        {
+            Reverse();
+
+            Master.mistakeTimer--;
+        }
+        
+
+
+    }
     public static void Resume()
     {
         //从暂停状态恢复
@@ -301,6 +434,48 @@ public class Master : MonoBehaviour
         //}
     }
 
+    public static void EnemyFrozen(float speed)
+    {
+        //将不在同一维度的敌人冰封起来
+        for (int i = 0; i < Master.bodyCollector.Count; i++)
+        {
+            humanBody tempBody = Master.bodyCollector[i];
+
+            if (tempBody.GetComponent<AIController>() != null)   //为敌人
+            {
+                if (tempBody.tenetDirection == 0)
+                {
+                    tempBody.GetAnimator().SetFloat("Speed", speed);
+                }
+                    
+
+            }
+
+
+        }
+    }
+
+    //public static void EnemyFree()
+    //{
+    //    //到逆转状态,将状态解封
+    //    for (int i = 0; i < Master.bodyCollector.Count; i++)
+    //    {
+    //        humanBody tempBody = Master.bodyCollector[i];
+
+    //        if (tempBody.GetComponent<AIController>() != null)   //为敌人
+    //        {
+    //            if (tempBody.tenetDirection == 0)
+    //            {
+    //                tempBody.GetAnimator().SetFloat("Speed", 1f);
+    //            }
+
+
+    //        }
+
+
+    //    }
+
+    //}
     public static void AddReverseMainGuy(Vector3 position)
     {
         Master.ReverseMainGuy.SetActive(true);

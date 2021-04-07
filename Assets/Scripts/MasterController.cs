@@ -57,7 +57,7 @@ public class MasterController : MonoBehaviour
                 //Debug.Log(egg.parm1 + "   " + egg.parm2);
                 break;
             case ActionEnum.movement.dead:
-                Debug.Log("复活");
+                //Debug.Log("复活");
                 body.Dead(1);
                 position = egg.position;  //可能也要赋予位置
                 break;
@@ -95,7 +95,23 @@ public class MasterController : MonoBehaviour
                 }
                
                 break;
+            case ActionEnum.movement.targetConfirm:
+                position = egg.position;
+                body.GetAnimator().SetFloat("Speed", 1f);
+                //body.SetFloat("Speed", 1f);
 
+                body.tenetDirection = 1;     //将其状态改回原来的
+                break;
+
+            case ActionEnum.movement.findMainguy:
+                position = egg.position;
+
+                if (body.tenetDirection == Master.currentDirection)
+                {
+                    body.target = null;
+                }
+
+                break;
             default:
                 break;
 
@@ -266,7 +282,7 @@ public class MasterController : MonoBehaviour
                     beenRight = 1;
                         if (frameEqualled == 1)
                         {
-                        frameEqualled = 0;
+                            frameEqualled = 0;
                             return position;
                         }
                         else

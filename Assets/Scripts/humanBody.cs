@@ -43,9 +43,13 @@ public class humanBody : MonoBehaviour
 
     public GameObject target;  //当前的目标
 
+    [HideInInspector]
+    public int beginDead;  //用于一次性的播放动画
+
     public int direction;   //用来保存主角方向
 
     public int tenetDirection = 1;   //默认为1,当为0时表示是逆向的主角
+
 
     //public bool attacking;  //表示是否正在攻击,并传给sword
 
@@ -54,6 +58,7 @@ public class humanBody : MonoBehaviour
 
     private void Awake()
     {
+        //cController = CursorController.Instance;  //获取单例变量
 
         leftLeg2 = transform.Find("leftLeg1/leftLeg2");
         rightLeg2 = transform.Find("rightLeg1/rightLeg2");
@@ -186,7 +191,7 @@ public class humanBody : MonoBehaviour
 
     }
 
-    private static void AddFrameWithoutConditions(MasterController mController, int frame, ActionEnum.movement movement, Vector2 position, float parm1, float parm2)
+    public static void AddFrameWithoutConditions(MasterController mController, int frame, ActionEnum.movement movement, Vector2 position, float parm1, float parm2)
     {
 
         if (movement == ActionEnum.movement.dead)
@@ -198,7 +203,15 @@ public class humanBody : MonoBehaviour
         mController.eggList.Add(egg);   //加入事件帧
     }
 
-   
+    public MasterController GetMController()
+    {
+        return this.mController;
+    }
+
+    public Animator GetAnimator()
+    {
+        return this.anim;
+    }
     public Vector2 Gravity(Vector2 eggPosition)
     {
         //由于rigidbody自带的重力系统怪怪的,所以自己弄一个
@@ -417,19 +430,28 @@ public class humanBody : MonoBehaviour
 
         return eggPosition;
     }
- 
+
+    
+
     public void Dead(int parm)
     {
         Master.hitPause = 2;   //击中时卡一下
 
+        Debug.Log("执行dead Egg");
 
         if (parm == 0 && anim.GetBool("dead") == false)   //不能死的状态
         {
 
+            this.beginDead = 1;
+
             //Debug.Log("加入死亡frame");
             AddFrameWithoutConditions(this.mController, Master.frame, ActionEnum.movement.dead, transform.position, 0, 0);  //加入事件帧
+
+
+            
+            AddFrameWithoutConditions(this.mController, Master.frame, ActionEnum.movement.empty, transform.position, 0, 0);  //加入事件帧
             anim.SetBool("dead", true);
-            anim.SetBool("Attack", false);   //攻击状态关闭
+            anim.SetInteger("Attack", 0);   //攻击状态关闭
             
         }
 
@@ -439,12 +461,14 @@ public class humanBody : MonoBehaviour
             if (anim.GetBool("dead") == true)
             {
 
-                Debug.Log("有复活");
+                Debug.Log("又复活");
                 anim.SetBool("dead", false);
 
             }
             else if (anim.GetBool("dead") == false)
             {
+
+                Debug.Log("又死去");
                 anim.SetBool("dead", true);
             }
         }
@@ -505,7 +529,11 @@ public class humanBody : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        
+        //看是否能检测鼠标的进入
+        //Debug.Log(collision);
+
+       
+
     }
 
     public void DetectWall()
@@ -586,8 +614,11 @@ public class humanBody : MonoBehaviour
 
     }
 
+    //private void OnMouseEnter()
+    //{
+    //    Debug.Log("进鼠标");
+    //}
 
-    
     public void DetectGround()
     {
         //检测脚下是否有地板
@@ -600,6 +631,7 @@ public class humanBody : MonoBehaviour
         //用左右脚发射射线,先判断左脚,后右脚,如果有则直接返回即可
 
         Debug.DrawRay(gameObject.transform.position, new Quaternion(0,0,-1,0) * gameObject.transform.up.normalized * 1f, Color.black);
+        
         //Debug.DrawRay(rightLeg2.transform.position, new Quaternion(0, 0, -1, 0) * gameObject.transform.up.normalized * 0.5f, Color.black);
 
         Vector2 direction = new Vector2(0, -1f);  //向下的射线
@@ -609,6 +641,7 @@ public class humanBody : MonoBehaviour
         Physics2D.queriesStartInColliders = false;  //避免检测到自己
 
         hit = Physics2D.Raycast(gameObject.transform.position, direction,1f, 1 << LayerMask.NameToLayer("Terrain"));
+       //Physics2D.Raycast()
         // Debug.Log("hit.collider.name " + hit.collider.name);
 
         if (hit.collider != null)
@@ -689,13 +722,33 @@ public class humanBody : MonoBehaviour
     public void AutoStop(List<Egg> eggList,int frame)
     {
         //根据自身的eggList的最后的frame与Master.frame是否超过一定值,如果超过一定值则暂停
-        if(eggList.Count>0)
-        if (frame-eggList[eggList.Count - 1].frame > 200)
+        if (Master.status == 2)
         {
-            //最后记录的帧数如果和现在的帧数超过200则自动暂停
-            Master.Stop();
-
+            //当在回溯时无视这个规则
+            return;
         }
+        else
+        {
+            if (eggList.Count > 0)
+            {
+                if (Master.currentDirection == 1)
+                {
+                    if (Mathf.Abs(frame - eggList[eggList.Count - 1].frame) > 40)
+                    {
+                        //最后记录的帧数如果和现在的帧数超过200则自动暂停
+                        Master.Stop();
+
+                    }
+                }
+                else if (Master.currentDirection == 0)
+                {
+
+                }
+                
+            }
+                
+        }
+        
 
     }
 

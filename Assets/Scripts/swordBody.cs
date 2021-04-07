@@ -45,6 +45,7 @@ public class swordBody : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //当在攻击时进行攻击判断
+        if(collision.gameObject.layer != father.gameObject.layer)   //同类之间不会打到
         if (attacking == true)
         {
             Debug.Log("击中的是 "+collision);
@@ -52,16 +53,49 @@ public class swordBody : MonoBehaviour
             //设置死亡动画
             humanBody body=collision.GetComponent<humanBody>();
 
-           // Debug.Log(col)
-           //123
-            body.Dead(0);
+            // Debug.Log(col)
+            //123
 
-            Instantiate(crack, hitPoint.position, this.transform.rotation);
+            //先判断是否已经死亡
+            //分为多种情况
+            //1.回放时,则如果是同纬度的人则不判断,非同纬度则倒退
+            //2.正常情况,正常死亡
+            //3.正常情况下,但是打到的不是同一纬度的人,则倒退
+            if (Master.status == 2 && body.tenetDirection == father.GetComponent<humanBody>().tenetDirection)
+            {
+
+            }
+            else if(Master.currentDirection!= father.GetComponent<humanBody>().tenetDirection
+                    &&body.tenetDirection== father.GetComponent<humanBody>().tenetDirection)
+                {
+                    //表示攻击者不在当前纬度且攻击到的目标和其一样不在当前纬度,则不进行判断
+                }
+            //else if(Master.status == 2 && body.tenetDirection != father.GetComponent<humanBody>().tenetDirection)
+            //{
+            //    Master.mistakeTimer = 40;  //进行强制倒退
+
+            //}                 
+            else if (body.tenetDirection != father.GetComponent<humanBody>().tenetDirection) //伤害判断前先判断是否在同一纬度,如果不在同一纬度则发生事件
+            {
+
+                //此时为发生错误,需要让玩家自己进行倒退
+
+                Master.mistakeTimer = 40;  //进行强制倒退
+            }
+            else
+            {
+                body.Dead(0);
+
+                blood.Play();
+
+                Instantiate(crack, hitPoint.position, this.transform.rotation);
+            }
+
+                
 
             attacking = false;
             //crack.SetActive(true);
             // particle.Play();
-            blood.Play();
             //Destroy(particle, particle.main.duration);
             
 
