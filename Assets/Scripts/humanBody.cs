@@ -174,7 +174,7 @@ public class humanBody : MonoBehaviour
         //给该目标的时间轴增添事件
         //if ((direction==1&&Master.status == 0 && Master.currentDirection == 1)||
         //    (direction==0&&Master.status==2&&Master.currentDirection==0))
-        if(Master.status==0&&tenetDirection==Master.currentDirection)
+        if(Master.status!=2&&tenetDirection==Master.currentDirection)
         {
 
             //Debug.Log("addframe");

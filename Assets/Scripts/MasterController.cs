@@ -99,6 +99,7 @@ public class MasterController : MonoBehaviour
                 position = egg.position;
                 body.GetAnimator().SetFloat("Speed", 1f);
                 //body.SetFloat("Speed", 1f);
+                body.transform.Find("CursorCollider").GetComponent<SpriteRenderer>().color = Color.white;
 
                 body.tenetDirection = 1;     //将其状态改回原来的
                 break;
@@ -133,7 +134,7 @@ public class MasterController : MonoBehaviour
         Vector2 position = transform.position;
 
 
-        if ((Master.currentDirection == 1&&tenetDirection==1)||
+        if ((Master.currentDirection == 1)||
             (Master.currentDirection==0&&tenetDirection==0))
         {
 
@@ -166,7 +167,7 @@ public class MasterController : MonoBehaviour
                 }
 
 
-                if (tenetDirection == 1)
+                if (tenetDirection == 1||(tenetDirection==0&&Master.currentDirection==1))   //正状态与逆状态但在正向阶段的
                 {
                     if (currentEgg.frame == Master.frame)
                     {
@@ -182,7 +183,7 @@ public class MasterController : MonoBehaviour
                         return position;
                     }
                 }
-                else if (tenetDirection == 0)
+                else if (tenetDirection == 0 && Master.currentDirection == 0)   //你状态且在逆向阶段的
                 {
                     if (currentEgg.frame == Master.frame)
                     {
@@ -203,8 +204,7 @@ public class MasterController : MonoBehaviour
             }
 
         }
-        else if ((Master.currentDirection == 0&&tenetDirection==1)||
-            (Master.currentDirection==1&&tenetDirection==0))
+        else if ((Master.currentDirection == 0&&tenetDirection==1))//(Master.currentDirection==1&&tenetDirection==0)
         {
             //此时可能有两个方向的差别
             //正向的敌人两个方向都只是读蛋且不删蛋,要保存索引

@@ -268,7 +268,7 @@ public class Master : MonoBehaviour
         //击中时卡一下
         if (hitPause >=2)
         {
-            System.Threading.Thread.Sleep(50);
+            //System.Threading.Thread.Sleep(50);
             //Debug.Log("hitPause暂停中");
             //Master.status = 1;
             //Master.SetAnimSpeed(0f);

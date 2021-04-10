@@ -55,7 +55,7 @@ public class bullet : MonoBehaviour
     {
 
         //当碰到物体时,使用粒子效果,并且消失,如果碰到的是玩家的话(非自己),则进入伤害步骤
-        if(Master.status==0&&Master.currentDirection==1)
+        if(Master.status==0)
         if(collision.gameObject.tag!="JumpingBoard")
         if (collision.gameObject != owner)
             {
@@ -74,9 +74,11 @@ public class bullet : MonoBehaviour
                     //设置死亡动画
                     humanBody body = collision.GetComponent<humanBody>();
 
+
+                    swordBody.AttackJudge(body, this.owner.GetComponent<humanBody>());
                     // Debug.Log(col)
                     //123
-                    body.Dead(0);
+                    //body.Dead(0);
 
                 }
 
@@ -85,7 +87,7 @@ public class bullet : MonoBehaviour
                 
                     //gameObject.SetActive(false);   //暂时不进行运动
                     //Debug.Log("123");
-                humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.bulletBack, transform.position, this.speed, 0, 1);
+                humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.bulletBack, transform.position, this.speed, 0, this.tenetDirection);
 
                 transform.position = new Vector3(transform.position.x, transform.position.y, -10);
                 speed = 0f;
@@ -127,7 +129,7 @@ public class bullet : MonoBehaviour
                 position += direction * speed * Time.deltaTime;
 
                     //增加frame
-                    humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.bulletMove, transform.position, 0, 0, 1);
+                    humanBody.AddFrame(this.mController, Master.frame, ActionEnum.movement.bulletMove, transform.position, 0, 0, this.tenetDirection);
 
                 }
 

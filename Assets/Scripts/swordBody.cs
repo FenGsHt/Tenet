@@ -53,55 +53,78 @@ public class swordBody : MonoBehaviour
             //设置死亡动画
             humanBody body=collision.GetComponent<humanBody>();
 
-            // Debug.Log(col)
-            //123
+                // Debug.Log(col)
+                //123
+                bool hit;
 
-            //先判断是否已经死亡
-            //分为多种情况
-            //1.回放时,则如果是同纬度的人则不判断,非同纬度则倒退
-            //2.正常情况,正常死亡
-            //3.正常情况下,但是打到的不是同一纬度的人,则倒退
-            if (Master.status == 2 && body.tenetDirection == father.GetComponent<humanBody>().tenetDirection)
-            {
+            //是否命中的判断
+            hit=AttackJudge(body, father.GetComponent<humanBody>());
 
-            }
-            else if(Master.currentDirection!= father.GetComponent<humanBody>().tenetDirection
-                    &&body.tenetDirection== father.GetComponent<humanBody>().tenetDirection)
+                if (hit == true)   //表示命中,此时播放动画
                 {
-                    //表示攻击者不在当前纬度且攻击到的目标和其一样不在当前纬度,则不进行判断
+                    blood.Play();
+
+                    Instantiate(crack, hitPoint.position, this.transform.rotation);
                 }
-            //else if(Master.status == 2 && body.tenetDirection != father.GetComponent<humanBody>().tenetDirection)
-            //{
-            //    Master.mistakeTimer = 40;  //进行强制倒退
 
-            //}                 
-            else if (body.tenetDirection != father.GetComponent<humanBody>().tenetDirection) //伤害判断前先判断是否在同一纬度,如果不在同一纬度则发生事件
-            {
 
-                //此时为发生错误,需要让玩家自己进行倒退
 
-                Master.mistakeTimer = 40;  //进行强制倒退
-            }
-            else
-            {
-                body.Dead(0);
 
-                blood.Play();
 
-                Instantiate(crack, hitPoint.position, this.transform.rotation);
-            }
-
+                attacking = false;
+                //crack.SetActive(true);
+                // particle.Play();
+                //Destroy(particle, particle.main.duration);
                 
 
-            attacking = false;
-            //crack.SetActive(true);
-            // particle.Play();
-            //Destroy(particle, particle.main.duration);
-            
+            }
 
+
+    }
+
+    public static bool AttackJudge(humanBody targetBody,humanBody sourceBody)
+    {
+        
+        //先判断是否已经死亡
+        //分为多种情况
+        //1.回放时,则如果是同纬度的人则不判断,非同纬度则倒退
+        //2.正常情况,正常死亡
+        //3.正常情况下,但是打到的不是同一纬度的人,则倒退
+        if (targetBody == null || sourceBody == null)
+        {
+            Debug.Log("body为null");
+        }
+
+        //用于攻击后是否命中的判断
+        if (Master.status == 2 && targetBody.tenetDirection == sourceBody.tenetDirection)
+        {
+            Debug.Log("1");
+        }
+        else if (Master.currentDirection != sourceBody.tenetDirection
+                && targetBody.tenetDirection == sourceBody.tenetDirection)
+        {
+            //表示攻击者不在当前纬度且攻击到的目标和其一样不在当前纬度,则不进行判断
+            Debug.Log("2");
+        }         
+        else if (targetBody.tenetDirection != sourceBody.tenetDirection) //伤害判断前先判断是否在同一纬度,如果不在同一纬度则发生事件
+        {
+
+            //此时为发生错误,需要让玩家自己进行倒退
+
+            Master.mistakeTimer = 40;  //进行强制倒退
+        }
+        else
+        {
+
+            Debug.Log("有死");
+            targetBody.Dead(0);
+
+            return true;
         }
 
 
+
+        return false;
     }
 
     // Update is called once per frame

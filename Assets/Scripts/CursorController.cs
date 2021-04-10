@@ -154,6 +154,7 @@ public class CursorController:MonoBehaviour
         }
 
 
+        //此时表示鼠标移出了物体,物体原有的预约图案变没
         if (this.target != null&&this.target.tenetDirection==1)
         {
 
@@ -173,7 +174,7 @@ public class CursorController:MonoBehaviour
         //确定target,此时将target的tenetDirection改为0,并给target加一个frame;
         bool mouseDown = Input.GetMouseButtonDown(1);
 
-        if (mouseDown == true)
+        if (mouseDown == true&&Master.status!=2)
         {
             if (this.target != null)
             {
@@ -184,6 +185,7 @@ public class CursorController:MonoBehaviour
 
                 this.target.transform.Find("CursorCollider").GetComponent<SpriteRenderer>().color = Color.gray;
 
+                
                 humanBody.AddFrameWithoutConditions(this.target.GetMController(), Master.frame, ActionEnum.movement.targetConfirm, this.target.transform.position, 0, 0);  //加入事件帧
             }
         }
